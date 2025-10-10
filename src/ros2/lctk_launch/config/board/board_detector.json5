@@ -13,7 +13,7 @@
     // ICP Algorithm Parameters
     // ========================================
     // max number of ICP iterations (increased for observing convergence behavior)
-    "max_icp_iterations": 10000,
+    "max_icp_iterations": 3000,
     // pose weight is amount of pose change per iteration
     // the ICP terminates if pose weight is below this threshold several times
     "icp_pose_weight_threshold": 1e-5,  // Tightened for better convergence
@@ -32,7 +32,7 @@
     // damping factor for pose updates (increased for better convergence)
     "icp_damping_factor": 0.6,  // Increased from 0.35 to 0.6
     // minimum number of inlier points required to continue ICP iterations
-    "icp_min_inlier_points": 1500,
+    "icp_min_inlier_points": 3000,
 
     // ========================================
     // Board Geometry Parameters

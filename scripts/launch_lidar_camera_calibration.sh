@@ -18,8 +18,8 @@ set -e
 DEBUG_MODE="false"
 ENABLE_RVIZ="false"
 USE_BEST_EFFORT_QOS="true"
-CAMERA_TOPIC="/sensing/camera/front_center/image_raw"
-POINTCLOUD_TOPIC="/sensing/lidar/top/pointcloud_raw"
+CAMERA_TOPIC="/sensing/camera/zedxm/zed_node/left_raw/image_raw_color"
+POINTCLOUD_TOPIC="/sensing/lidar/concatenated/pointcloud"
 
 # Function to show help
 show_help() {

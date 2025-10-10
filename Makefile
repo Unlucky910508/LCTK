@@ -150,6 +150,17 @@ stop_lidar_camera_sample_data:
 	@. install/setup.sh && \
 	ros2 systemd stop lctk-lidar-camera-data
 
+.PHONY: loop_play_all_dataset
+loop_play_all_dataset:
+	while true; do \
+		for d in ./dataset/*; do \
+			echo "Playing $$d"; \
+			ros2 bag play "$$d"; \
+		done; \
+		sleep 5; \
+	done
+
+
 .PHONY: launch_lidar_camera_calibration
 launch_lidar_camera_calibration:
 	@. install/setup.sh && \
@@ -161,8 +172,10 @@ launch_lidar_camera_calibration:
 		enable_rviz:=$(or $(rviz),false) \
 		log_level:=$(or $(log_level),info) \
 		use_best_effort_qos:=$(or $(use_best_effort_qos),true) \
-		camera_topic:=$(or $(camera_topic),/sensing/camera/front_center/image_raw) \
-		pointcloud_topic:=$(or $(pointcloud_topic),/sensing/lidar/top/pointcloud_raw)
+		camera_topic:=/sensing/camera/zedxm/zed_node/left_raw/image_raw_color \
+		pointcloud_topic:=/sensing/lidar/concatenated/pointcloud
+		# camera_topic:=$(or $(camera_topic),/sensing/camera/front_center/image_raw) \
+		# pointcloud_topic:=$(or $(pointcloud_topic),/sensing/lidar/top/pointcloud_raw)
 
 .PHONY: stop_lidar_camera_calibration
 stop_lidar_camera_calibration:
@@ -204,6 +217,11 @@ launch_two_lidar_calibration:
 stop_two_lidar_calibration:
 	@. install/setup.sh && \
 	ros2 systemd stop lctk-two-lidar
+
+.PHONY: interactive_solver_controller
+interactive_solver_controller:
+	@. install/setup.sh && \
+	python3 src/ros2/extrinsic_solver_node/interactive_controller.py
 
 # Service Management Utilities
 

@@ -132,7 +132,7 @@ class EducationalExtrinsicSolver(Node):
 
         # Publishers - only essential output
         self.transform_publisher = self.create_publisher(
-            TransformStamped, "extrinsic_transform", qos_profile
+            TransformStamped, "extrinsic_node_transform", qos_profile
         )
 
         # Subscribers
@@ -146,6 +146,21 @@ class EducationalExtrinsicSolver(Node):
             self.board_callback,
             qos_profile,
         )
+
+        # self.aruco_subscription = self.create_subscription(
+        #     Detection2DArray, "/calibration/collect_trigger/aruco_detections", self.aruco_callback, qos_profile
+        # )
+
+        # self.board_subscription = self.create_subscription(
+        #     Detection3DArray,
+        #     "/calibration/collect_trigger/calibration_board_detections",
+        #     self.board_callback,
+        #     qos_profile,
+        # )
+
+        # self.create_subscription(Detection2DArray, '/calibration/collect_trigger/aruco_detections', self.on_trigger, qos_profile)
+        # self.create_subscription(Detection3DArray, '/calibration/collect_trigger/calibration_board_detections', self.on_trigger, qos_profile)
+   
 
         # Derive camera_info topic from camera_topic parameter (image_pipeline convention)
         camera_topic = (
@@ -172,6 +187,7 @@ class EducationalExtrinsicSolver(Node):
         # Educational note: Log configuration for learning purposes
 
         self.get_logger().info(
+            f"[TEST]\n"
             f"Educational Extrinsic Solver initialized\n"
             f"Educational Mode: Simplified PnP calibration using OpenCV\n"
             f"Subscribing to: aruco_detections, calibration_board_detections, {camera_info_topic}\n"
@@ -179,6 +195,14 @@ class EducationalExtrinsicSolver(Node):
             f"Transform: {self.parent_frame} -> {self.child_frame}\n"
             f"Using cv2.solvePnP for educational demonstration"
         )
+
+        self.aruco_msg_buffer = []
+        self.board_msg_biffer = []
+
+    # def on_trigger(self, msg):
+    #     if msg.data:
+    #         # 把目前的 2D / 3D 偵測結果取出，存進 buffer
+    #         self.get_logger().info("Collecting one data pair for calibration...")
 
     def camera_info_callback(self, msg: CameraInfo):
         """
@@ -794,10 +818,12 @@ def main(args=None):
     Educational note: This is the standard ROS2 node entry point.
     It initializes ROS2, creates the node, and handles shutdown.
     """
+    print(f"[TEST]")
     rclpy.init(args=args)
 
     node = EducationalExtrinsicSolver()
-
+    
+    
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
