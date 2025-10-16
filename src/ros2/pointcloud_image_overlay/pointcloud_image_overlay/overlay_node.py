@@ -112,9 +112,21 @@ def transform_to_rvec_tvec(
     # This is the mathematical transformation from quaternion to rotation matrix
     rotation_matrix = np.array(
         [
-            [1 - 2 * (qy**2 + qz**2), 2 * (qx * qy - qz * qw), 2 * (qx * qz + qy * qw)],
-            [2 * (qx * qy + qz * qw), 1 - 2 * (qx**2 + qz**2), 2 * (qy * qz - qx * qw)],
-            [2 * (qx * qz - qy * qw), 2 * (qy * qz + qx * qw), 1 - 2 * (qx**2 + qy**2)],
+            [
+                1 - 2 * (qy**2 + qz**2),
+                2 * (qx * qy - qz * qw),
+                2 * (qx * qz + qy * qw),
+            ],
+            [
+                2 * (qx * qy + qz * qw),
+                1 - 2 * (qx**2 + qz**2),
+                2 * (qy * qz - qx * qw),
+            ],
+            [
+                2 * (qx * qz - qy * qw),
+                2 * (qy * qz + qx * qw),
+                1 - 2 * (qx**2 + qy**2),
+            ],
         ],
         dtype=np.float64,
     )
@@ -192,11 +204,11 @@ class EducationalOverlayNode(Node):
             qos = QoSProfile(
                 reliability=ReliabilityPolicy.BEST_EFFORT,
                 durability=DurabilityPolicy.VOLATILE,
-                depth=10,
+                depth=1,  # Prevent buffering delays
             )
         else:
             # Reliable: Guaranteed delivery (good for recorded data/rosbags)
-            qos = QoSProfile(depth=10)
+            qos = QoSProfile(depth=1)  # Prevent buffering delays
 
         # === SENSOR DATA SUBSCRIPTIONS ===
         # Educational pattern: subscribe to all required sensor streams
@@ -245,8 +257,14 @@ class EducationalOverlayNode(Node):
 
         # === OUTPUT PUBLISHER ===
         # Publish overlay visualization (sensor_msgs/Image)
+        # Use best-effort QoS for real-time visualization (matches sensor data QoS)
+        overlay_qos = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.VOLATILE,
+            depth=1,
+        )
         self.overlay_publisher = self.create_publisher(
-            Image, "/calibration/pointcloud_overlay", 10
+            Image, "/calibration/pointcloud_overlay", overlay_qos
         )
 
         # Educational logging

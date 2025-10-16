@@ -39,11 +39,14 @@ impl HollowBoardDetectionProcessor {
             // ICP algorithm tuning parameters
             icp_good_fit_threshold: 0.015,
             icp_outlier_threshold: 0.1,
-            icp_adaptive_threshold_multiplier: 2.0,
-            icp_adaptive_threshold_min: 0.01,
-            icp_adaptive_threshold_max: 1.0,
             icp_damping_factor: 0.3,
             icp_min_inlier_points: 200,
+
+            // Voxel downsampling (disabled by default)
+            voxel_downsample_enabled: false,
+            voxel_downsample_size: 0.02,
+            voxel_downsample_use_centroid: true,
+            voxel_parallel_threshold: 50_000,
 
             board_shape: BoardShape {
                 board_width: Length::from_inches(12.0),

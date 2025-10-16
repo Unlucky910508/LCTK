@@ -46,6 +46,14 @@
          default="false"
          description="Launch RViz for calibration visualization"/>
 
+    <arg name="enable_judge"
+         default="true"
+         description="Enable calibration quality judge (ground truth comparison)"/>
+
+    <arg name="enable_overlay"
+         default="true"
+         description="Enable ArUco detection overlay visualization"/>
+
     <arg name="log_level"
          default="info"
          description="ROS log level (debug, info, warn, error, fatal)"/>
@@ -62,12 +70,17 @@
          default="1.0"
          description="Minimum distance for point cloud filtering (meters)"/>
 
+    <arg name="use_advanced_solver"
+         default="false"
+         description="Use advanced extrinsic solver (buffered multi-pose) instead of educational solver"/>
+
     <!-- Image Processing Pipeline -->
     <include file="$(find-pkg-share lctk_launch)/launch/image_processing.launch.xml">
         <arg name="aruco_config_file" value="$(var aruco_config_file)"/>
         <arg name="camera_topic" value="$(var camera_topic)"/>
         <arg name="namespace" value="$(var namespace)"/>
         <arg name="debug_mode" value="$(var debug_mode)"/>
+        <arg name="enable_overlay" value="$(var enable_overlay)"/>
         <arg name="log_level" value="$(var log_level)"/>
         <arg name="use_best_effort_qos" value="$(var use_best_effort_qos)"/>
     </include>
@@ -95,6 +108,7 @@
         <arg name="namespace" value="$(var namespace)"/>
         <arg name="debug_mode" value="$(var debug_mode)"/>
         <arg name="log_level" value="$(var log_level)"/>
+        <arg name="use_advanced_solver" value="$(var use_advanced_solver)"/>
     </include>
 
     <!-- Educational Pointcloud Image Overlay Visualization (Python) -->
@@ -115,6 +129,14 @@
         <remap from="image" to="$(var camera_topic)"/>
         <remap from="pointcloud" to="$(var pointcloud_topic)"/>
     </node>
+
+    <!-- Calibration Quality Judge (Optional) -->
+    <!-- Evaluates calibration quality by comparing estimated transforms against ground truth -->
+    <include file="$(find-pkg-share lctk_launch)/launch/calibration_judge.launch.xml" if="$(var enable_judge)">
+        <arg name="transform_topic" value="/$(var namespace)/extrinsic_solver/extrinsic_transform"/>
+        <arg name="namespace" value="$(var namespace)"/>
+        <arg name="log_level" value="$(var log_level)"/>
+    </include>
 
     <!-- RViz Visualization (Optional) -->
     <include file="$(find-pkg-share lctk_launch)/launch/rviz.launch.xml" if="$(var enable_rviz)"/>

@@ -2,7 +2,21 @@ COLCON_BUILD_FLAGS := --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=RelWithD
 COLCON_TEST_FLAGS := --ctest-args -C RelWithDebInfo --cargo-args --profile=test-release
 LOG_DIR := build_logs
 debug_mode := true
+enable_icp_iteration_debug := true
+enable_evaluator := true
+enable_overlay := true
 log_level := info
+rviz := true
+use_best_effort_qos := true
+use_advanced_solver := true
+
+## Topics for sample data
+# camera_topic := /sensing/camera/front_center/image_raw
+# pointcloud_topic := /sensing/lidar/top/pointcloud_raw
+
+## Topics for AutoSDV data
+camera_topic := /sensing/camera/zedxm/zed_node/left_raw/image_raw_color
+pointcloud_topic := /sensing/lidar/concatenated/pointcloud
 
 .PHONY: default
 default: help
@@ -24,7 +38,7 @@ help:
 	@echo "Launch Commands (using ros2systemd for reliable service management):"
 	@echo "  make launch_lidar_camera_sample_data - Create and start LiDAR-camera sample data service"
 	@echo "  make stop_lidar_camera_sample_data   - Stop LiDAR-camera sample data service"
-	@echo "  make launch_lidar_camera_calibration - Create and start LiDAR-Camera calibration pipeline (add debug_mode=true for debug topics, log_level=debug for verbose logs, rviz=true for RViz, use_best_effort_qos=false for rosbag)"
+	@echo "  make launch_lidar_camera_calibration - Create and start LiDAR-Camera calibration pipeline (add debug_mode=true for debug topics, enable_evaluator=true for IoU metrics, log_level=debug for verbose logs, rviz=true for RViz, use_best_effort_qos=false for rosbag)"
 	@echo "  make stop_lidar_camera_calibration   - Stop LiDAR-Camera calibration service"
 	@echo "  make launch_two_lidar_calibration    - Create and start two LiDAR calibration service"
 	@echo "  make stop_two_lidar_calibration      - Stop two LiDAR calibration service"
@@ -150,32 +164,22 @@ stop_lidar_camera_sample_data:
 	@. install/setup.sh && \
 	ros2 systemd stop lctk-lidar-camera-data
 
-.PHONY: loop_play_all_dataset
-loop_play_all_dataset:
-	while true; do \
-		for d in ./dataset/*; do \
-			echo "Playing $$d"; \
-			ros2 bag play "$$d"; \
-		done; \
-		sleep 5; \
-	done
-
-
 .PHONY: launch_lidar_camera_calibration
 launch_lidar_camera_calibration:
 	@. install/setup.sh && \
 	ros2 systemd launch --name lctk-calibration --replace \
 		--env RUST_LOG=debug \
 		lctk_launch lidar_camera_calibration.launch.xml \
-		debug_mode:=$(or $(debug_mode),true) \
-		enable_icp_iteration_debug:=$(or $(enable_icp_iteration_debug),true) \
-		enable_rviz:=$(or $(rviz),false) \
-		log_level:=$(or $(log_level),info) \
-		use_best_effort_qos:=$(or $(use_best_effort_qos),true) \
-		camera_topic:=/sensing/camera/zedxm/zed_node/left_raw/image_raw_color \
-		pointcloud_topic:=/sensing/lidar/concatenated/pointcloud
-		# camera_topic:=$(or $(camera_topic),/sensing/camera/front_center/image_raw) \
-		# pointcloud_topic:=$(or $(pointcloud_topic),/sensing/lidar/top/pointcloud_raw)
+		debug_mode:=$(debug_mode) \
+		enable_icp_iteration_debug:=$(enable_icp_iteration_debug) \
+		enable_evaluator:=$(enable_evaluator) \
+		enable_overlay:=$(enable_overlay) \
+		enable_rviz:=$(rviz) \
+		log_level:=$(log_level) \
+		use_best_effort_qos:=$(use_best_effort_qos) \
+		use_advanced_solver:=$(use_advanced_solver) \
+		camera_topic:=$(camera_topic) \
+		pointcloud_topic:=$(pointcloud_topic)
 
 .PHONY: stop_lidar_camera_calibration
 stop_lidar_camera_calibration:
@@ -193,6 +197,11 @@ tune_filter_box:
 	@. install/setup.sh && \
 	export RUST_LOG=info && \
 	ros2 run filter_box_tuner filter_box_tuner
+
+.PHONY: interactive_solver_controller
+interactive_solver_controller:
+	@. install/setup.sh && \
+	ros2 run interactive_solver_controller interactive_solver_controller
 
 .PHONY: launch_iou_overlapping
 launch_iou_overlapping:
@@ -217,11 +226,6 @@ launch_two_lidar_calibration:
 stop_two_lidar_calibration:
 	@. install/setup.sh && \
 	ros2 systemd stop lctk-two-lidar
-
-.PHONY: interactive_solver_controller
-interactive_solver_controller:
-	@. install/setup.sh && \
-	python3 src/ros2/extrinsic_solver_node/interactive_controller.py
 
 # Service Management Utilities
 

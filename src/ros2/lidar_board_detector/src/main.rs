@@ -2,7 +2,7 @@ mod bbox;
 mod services;
 
 use crate::{bbox::BBox, services::BBoxServices};
-use anyhow::{anyhow, bail, Result};
+use anyhow::{anyhow, Result};
 use arc_swap::ArcSwap;
 use aruco_config::MultiArucoPattern;
 use geometry_msgs::msg::{
@@ -10,23 +10,21 @@ use geometry_msgs::msg::{
 };
 use hollow_board_config::{BoardModel, BoardShape};
 use hollow_board_detector::{
-    algo::{fit_plane_ransac, BoardIcpIterator},
+    algo::{fit_plane_ransac, voxel_downsample, BoardIcpIterator},
     detection::{BoardIcpState, BoardModelParams, IcpStatistics, PlaneRansacData},
     init_logging, Config as BoardDetectorConfig, Detection as BoardDetection,
     Detector as BoardDetector,
 };
 use nalgebra::{self as na, Translation3, UnitQuaternion};
-use ndarray::Array2;
-use petal_decomposition::PcaBuilder;
 use plane_estimator::PlaneModel;
-use rclrs::{SubscriptionOptions, *};
+use rclrs::{PublisherOptions, SubscriptionOptions, *};
 use sensor_msgs::msg::{PointCloud2, PointField};
 use std::{
     f64::consts::FRAC_PI_2,
     fs,
     path::PathBuf,
     sync::{
-        atomic::{AtomicU64, Ordering},
+        atomic::{AtomicBool, AtomicU64, Ordering},
         Arc,
     },
     thread,
@@ -54,6 +52,7 @@ struct BoardDebugPublishers {
     all_points: Arc<Publisher<PointCloud2>>,
     filtered_points: Arc<Publisher<PointCloud2>>,
     plane_inliers: Arc<Publisher<PointCloud2>>,
+    downsampled_points: Arc<Publisher<PointCloud2>>,
     plane_marker: Arc<Publisher<MarkerArray>>,
     bbox_marker: Arc<Publisher<MarkerArray>>,
     board_marker: Arc<Publisher<MarkerArray>>,
@@ -137,6 +136,22 @@ impl CalibrationBoardLocatorNode {
             board_detector_config.max_icp_iterations
         );
 
+        // Log voxel downsampling configuration
+        if board_detector_config.voxel_downsample_enabled {
+            log_info!(
+                LOGGER_NAME,
+                "Voxel downsampling ENABLED: size={:.3}m, use_centroid={}, parallel_threshold={}",
+                board_detector_config.voxel_downsample_size,
+                board_detector_config.voxel_downsample_use_centroid,
+                board_detector_config.voxel_parallel_threshold
+            );
+        } else {
+            log_info!(
+                LOGGER_NAME,
+                "Voxel downsampling DISABLED (preserving all points for ICP)"
+            );
+        }
+
         log_info!(
             LOGGER_NAME,
             "Loading ArUco pattern config from: {}",
@@ -157,29 +172,71 @@ impl CalibrationBoardLocatorNode {
             aruco_pattern_config,
         ));
 
-        // Create publisher for detections
-        let detection_publisher = node.create_publisher("calibration_board_detections")?;
+        // Create publisher for detections with BEST_EFFORT QoS for timestamp-based matching
+        let mut detection_pub_opts = PublisherOptions::new("calibration_board_detections");
+        detection_pub_opts.qos = QoSProfile {
+            history: QoSHistoryPolicy::KeepLast { depth: 1 },
+            ..QoSProfile::sensor_data_default() // BEST_EFFORT
+        };
+        let detection_publisher = node.create_publisher(detection_pub_opts)?;
         let detection_publisher_shared = Arc::clone(&detection_publisher);
 
         // Create board debug publishers if debug mode is enabled
         let board_debug_publishers = if enable_debug {
             log_info!(
                 LOGGER_NAME,
-                "Debug mode enabled - creating debug publishers"
+                "Debug mode enabled - creating debug publishers with best-effort QoS"
             );
+
+            // Create best-effort QoS profile with depth=1 (latest only, no queue buildup)
+            let mut debug_qos = QoSProfile::sensor_data_default();
+            debug_qos.history = rclrs::QoSHistoryPolicy::KeepLast { depth: 1 };
+
+            let mut all_points_opts = PublisherOptions::new("debug/all_points");
+            all_points_opts.qos = debug_qos;
+
+            let mut filtered_points_opts = PublisherOptions::new("debug/filtered_points");
+            filtered_points_opts.qos = debug_qos;
+
+            let mut plane_inliers_opts = PublisherOptions::new("debug/plane_inliers");
+            plane_inliers_opts.qos = debug_qos;
+
+            let mut downsampled_points_opts = PublisherOptions::new("debug/downsampled_points");
+            downsampled_points_opts.qos = debug_qos;
+
+            let mut plane_marker_opts = PublisherOptions::new("debug/plane_marker");
+            plane_marker_opts.qos = debug_qos;
+
+            let mut bbox_marker_opts = PublisherOptions::new("debug/bbox_marker");
+            bbox_marker_opts.qos = debug_qos;
+
+            let mut board_marker_opts = PublisherOptions::new("debug/final_board_pose");
+            board_marker_opts.qos = debug_qos;
+
+            let mut board_marker_icp_opts = PublisherOptions::new("debug/icp_iterations");
+            board_marker_icp_opts.qos = debug_qos;
+
+            let mut initial_board_marker_opts = PublisherOptions::new("debug/initial_board_marker");
+            initial_board_marker_opts.qos = debug_qos;
+
+            let mut icp_stats_opts = PublisherOptions::new("debug/icp_stats");
+            icp_stats_opts.qos = debug_qos;
+
+            let mut pca_eigenvectors_opts = PublisherOptions::new("debug/pca_eigenvectors");
+            pca_eigenvectors_opts.qos = debug_qos;
+
             Some(BoardDebugPublishers {
-                all_points: Arc::new(node.create_publisher("debug/all_points")?),
-                filtered_points: Arc::new(node.create_publisher("debug/filtered_points")?),
-                plane_inliers: Arc::new(node.create_publisher("debug/plane_inliers")?),
-                plane_marker: Arc::new(node.create_publisher("debug/plane_marker")?),
-                bbox_marker: Arc::new(node.create_publisher("debug/bbox_marker")?),
-                board_marker: Arc::new(node.create_publisher("debug/final_board_pose")?),
-                board_marker_icp: Arc::new(node.create_publisher("debug/icp_iterations")?),
-                initial_board_marker: Arc::new(
-                    node.create_publisher("debug/initial_board_marker")?,
-                ),
-                icp_stats: Arc::new(node.create_publisher("debug/icp_stats")?),
-                pca_eigenvectors: Arc::new(node.create_publisher("debug/pca_eigenvectors")?),
+                all_points: Arc::new(node.create_publisher(all_points_opts)?),
+                filtered_points: Arc::new(node.create_publisher(filtered_points_opts)?),
+                plane_inliers: Arc::new(node.create_publisher(plane_inliers_opts)?),
+                downsampled_points: Arc::new(node.create_publisher(downsampled_points_opts)?),
+                plane_marker: Arc::new(node.create_publisher(plane_marker_opts)?),
+                bbox_marker: Arc::new(node.create_publisher(bbox_marker_opts)?),
+                board_marker: Arc::new(node.create_publisher(board_marker_opts)?),
+                board_marker_icp: Arc::new(node.create_publisher(board_marker_icp_opts)?),
+                initial_board_marker: Arc::new(node.create_publisher(initial_board_marker_opts)?),
+                icp_stats: Arc::new(node.create_publisher(icp_stats_opts)?),
+                pca_eigenvectors: Arc::new(node.create_publisher(pca_eigenvectors_opts)?),
             })
         } else {
             None
@@ -190,20 +247,37 @@ impl CalibrationBoardLocatorNode {
         let icp_debug_publishers = if enable_icp_iteration_debug {
             log_info!(
                 LOGGER_NAME,
-                "ICP iteration debug mode enabled - creating iteration debug publishers"
+                "ICP iteration debug mode enabled - creating iteration debug publishers with best-effort QoS"
             );
+
+            // Create best-effort QoS profile with depth=1 (latest only, no queue buildup)
+            let mut icp_debug_qos = QoSProfile::sensor_data_default();
+            icp_debug_qos.history = rclrs::QoSHistoryPolicy::KeepLast { depth: 1 };
+
+            let mut iteration_pose_opts =
+                PublisherOptions::new("/calibration/icp_debug/iteration_pose");
+            iteration_pose_opts.qos = icp_debug_qos;
+
+            let mut board_points_opts =
+                PublisherOptions::new("/calibration/icp_debug/board_points");
+            board_points_opts.qos = icp_debug_qos;
+
+            let mut correspondences_opts =
+                PublisherOptions::new("/calibration/icp_debug/correspondences");
+            correspondences_opts.qos = icp_debug_qos;
+
+            let mut loss_opts = PublisherOptions::new("/calibration/icp_debug/loss");
+            loss_opts.qos = icp_debug_qos;
+
+            let mut stats_opts = PublisherOptions::new("/calibration/icp_debug/stats");
+            stats_opts.qos = icp_debug_qos;
+
             Some(IcpDebugPublishers {
-                iteration_pose: Arc::new(
-                    node.create_publisher("/calibration/icp_debug/iteration_pose")?,
-                ),
-                board_points: Arc::new(
-                    node.create_publisher("/calibration/icp_debug/board_points")?,
-                ),
-                correspondences: Arc::new(
-                    node.create_publisher("/calibration/icp_debug/correspondences")?,
-                ),
-                loss: Arc::new(node.create_publisher("/calibration/icp_debug/loss")?),
-                stats: Arc::new(node.create_publisher("/calibration/icp_debug/stats")?),
+                iteration_pose: Arc::new(node.create_publisher(iteration_pose_opts)?),
+                board_points: Arc::new(node.create_publisher(board_points_opts)?),
+                correspondences: Arc::new(node.create_publisher(correspondences_opts)?),
+                loss: Arc::new(node.create_publisher(loss_opts)?),
+                stats: Arc::new(node.create_publisher(stats_opts)?),
             })
         } else {
             None
@@ -212,7 +286,9 @@ impl CalibrationBoardLocatorNode {
 
         // Configure QoS for sensor input topics
         let qos_profile = if use_best_effort_qos {
-            QoSProfile::sensor_data_default() // Best effort for live sensors
+            let mut qos = QoSProfile::sensor_data_default();
+            qos.history = rclrs::QoSHistoryPolicy::KeepLast { depth: 1 }; // Prevent buffering delays
+            qos
         } else {
             QoSProfile::default() // Reliable for rosbag playback
         };
@@ -220,6 +296,12 @@ impl CalibrationBoardLocatorNode {
         // Counter for debugging message processing
         let message_counter = Arc::new(AtomicU64::new(0));
         let counter_clone = Arc::clone(&message_counter);
+        
+        // Processing flag to prevent callback overload - buffer only one message
+        let processing_flag = Arc::new(AtomicBool::new(false));
+        let processing_flag_clone = Arc::clone(&processing_flag);
+        let dropped_counter = Arc::new(AtomicU64::new(0));
+        let dropped_counter_clone = Arc::clone(&dropped_counter);
 
         // Clone bbox for subscription callback
         let bbox_for_callback = Arc::clone(&bbox);
@@ -230,6 +312,19 @@ impl CalibrationBoardLocatorNode {
         let pointcloud_subscription =
             node.create_subscription(pointcloud_options, move |msg: PointCloud2| {
                 let count = counter_clone.fetch_add(1, Ordering::Relaxed);
+                
+                // Skip processing if previous callback is still running (buffer overflow protection)
+                if processing_flag_clone.swap(true, Ordering::Acquire) {
+                    let dropped = dropped_counter_clone.fetch_add(1, Ordering::Relaxed);
+                    log_debug!(
+                        LOGGER_NAME,
+                        "Dropping message #{} (processing busy, total dropped: {})",
+                        count + 1,
+                        dropped + 1
+                    );
+                    return;
+                }
+                
                 log_debug!(LOGGER_NAME, "Processing message #{}", count + 1);
 
                 Self::pointcloud_callback(
@@ -240,6 +335,9 @@ impl CalibrationBoardLocatorNode {
                     &board_debug_shared,
                     &icp_debug_shared,
                 );
+                
+                // Release processing flag
+                processing_flag_clone.store(false, Ordering::Release);
             })?;
 
         if enable_debug {
@@ -476,20 +574,76 @@ impl CalibrationBoardLocatorNode {
             }
         };
 
-        // Stage 3: ICP board pose refinement
+        // Stage 3a: Voxel downsampling (optional preprocessing)
+        log_info!(
+            LOGGER_NAME,
+            "Plane inlier points before voxel downsampling: {} points",
+            plane_inlier_points.len()
+        );
+
+        let config = detector.config();
+        let downsampled_points = if config.voxel_downsample_enabled {
+            let downsampled = voxel_downsample(
+                &plane_inlier_points,
+                config.voxel_downsample_size,
+                config.voxel_downsample_use_centroid,
+                config.voxel_parallel_threshold,
+            );
+
+            let reduction_pct =
+                (1.0 - downsampled.len() as f64 / plane_inlier_points.len() as f64) * 100.0;
+            log_info!(
+                LOGGER_NAME,
+                "Voxel downsampling: {} → {} points ({:.1}% reduction)",
+                plane_inlier_points.len(),
+                downsampled.len(),
+                reduction_pct
+            );
+
+            // Publish downsampled points for visualization
+            if let Some(debug_pubs) = board_debug_publishers {
+                match Self::create_debug_pointcloud(&downsampled, &msg.header) {
+                    Ok(downsampled_cloud) => {
+                        if let Err(e) = debug_pubs.downsampled_points.publish(downsampled_cloud) {
+                            log_warn!(LOGGER_NAME, "Failed to publish downsampled points: {e}");
+                        }
+                    }
+                    Err(e) => {
+                        log_warn!(LOGGER_NAME, "Failed to create downsampled pointcloud: {e}");
+                    }
+                }
+            }
+
+            downsampled
+        } else {
+            log_debug!(
+                LOGGER_NAME,
+                "Voxel downsampling disabled - using all {} plane inlier points",
+                plane_inlier_points.len()
+            );
+            plane_inlier_points.clone()
+        };
+
+        log_info!(
+            LOGGER_NAME,
+            "Points for ICP: {} points",
+            downsampled_points.len()
+        );
+
+        // Stage 3b: ICP board pose refinement
         log_debug!(
             LOGGER_NAME,
-            "Starting ICP board detection with {} plane inlier points",
-            plane_inlier_points.len()
+            "Starting ICP board detection with {} points",
+            downsampled_points.len()
         );
 
         let detection: Option<BoardDetection> = Self::detect_icp(
             detector,
             &plane_model,
-            &plane_inlier_points,
+            &downsampled_points,
             PlaneRansacData {
                 plane_model: plane_model.clone(),
-                inlier_points: plane_inlier_points.clone(),
+                inlier_points: downsampled_points.clone(),
             },
             &msg.header,
             icp_debug_publishers,
@@ -760,8 +914,9 @@ impl CalibrationBoardLocatorNode {
             marker_paper_size,
         };
 
-        // Step 3: Create initial pose using PCA-based alignment
-        let initial_pose = Self::compute_initial_pose_pca(
+        // Step 3: Create initial pose using plane normal-based alignment
+        let initial_pose = Self::compute_initial_pose_from_plane(
+            plane_model,
             plane_inlier_points,
             board_width.as_meters(),
             header,
@@ -803,8 +958,10 @@ impl CalibrationBoardLocatorNode {
             }
         }
 
-        let initial_inlier_points: Vec<na::Point3<f64>> =
-            plane_inlier_points.iter().cloned().collect();
+        // Note: plane_inlier_points are already downsampled (if enabled) in process_pointcloud()
+        let icp_points: Vec<na::Point3<f64>> = plane_inlier_points.iter().cloned().collect();
+
+        log_info!(LOGGER_NAME, "Starting ICP with {} points", icp_points.len());
 
         // Step 4: Create BoardIcpIterator
         let mut iterator = BoardIcpIterator::new(
@@ -813,8 +970,8 @@ impl CalibrationBoardLocatorNode {
             None, // No progress callback as we handle debug publishing ourselves
         );
 
-        // Step 5: Create initial state
-        let mut state = iterator.initial_state(initial_pose, initial_inlier_points);
+        // Step 5: Create initial ICP state
+        let mut state = iterator.initial_state(initial_pose, icp_points);
 
         log_debug!(
             LOGGER_NAME,
@@ -822,7 +979,7 @@ impl CalibrationBoardLocatorNode {
             state.board_pose
         );
 
-        // Step 6: Iterate with optional debug publishing
+        // Step 7: Iterate with optional debug publishing
         loop {
             // Perform one ICP iteration step FIRST
             state = iterator.step(&state);
@@ -975,239 +1132,113 @@ impl CalibrationBoardLocatorNode {
         }
     }
 
-    /// Compute initial board pose using PCA-based alignment
-    fn compute_initial_pose_pca(
+    /// Compute initial board pose using plane normal alignment (from wayside-portal)
+    fn compute_initial_pose_from_plane(
+        plane_model: &PlaneModel,
         plane_inlier_points: &[na::Point3<f64>],
         board_width_meters: f64,
-        header: &Header,
-        debug_publishers: &Option<BoardDebugPublishers>,
+        _header: &Header,
+        _debug_publishers: &Option<BoardDebugPublishers>,
     ) -> Option<na::Isometry3<f64>> {
         if plane_inlier_points.is_empty() {
-            log_warn!(LOGGER_NAME, "Cannot compute PCA pose with empty point set");
-            return None;
-        }
-
-        if plane_inlier_points.len() < 3 {
             log_warn!(
                 LOGGER_NAME,
-                "Need at least 3 points for PCA, got {}",
-                plane_inlier_points.len()
+                "Cannot compute initial pose with empty point set"
             );
             return None;
         }
 
-        // Step 1: Compute centroid
-        let centroid = plane_inlier_points
+        // Step 1: Compute centroid of plane inlier points
+        let inlier_centroid = plane_inlier_points
             .iter()
             .fold(na::Vector3::zeros(), |acc, point| acc + point.coords)
             / (plane_inlier_points.len() as f64);
 
         log_debug!(
             LOGGER_NAME,
-            "PCA pose initialization: centroid=({:.3}, {:.3}, {:.3}), {} points",
-            centroid.x,
-            centroid.y,
-            centroid.z,
+            "Initial pose from plane: centroid=({:.3}, {:.3}, {:.3}), {} points",
+            inlier_centroid.x,
+            inlier_centroid.y,
+            inlier_centroid.z,
             plane_inlier_points.len()
         );
 
-        // Step 2: Create data matrix for PCA using petal-decomposition
-        // petal-decomposition expects data as (n_samples, n_features) = (n_points, 3)
-        let n_points = plane_inlier_points.len();
-        let mut data_array = Array2::<f64>::zeros((n_points, 3));
-
-        for (row_idx, point) in plane_inlier_points.iter().enumerate() {
-            data_array[[row_idx, 0]] = point.x;
-            data_array[[row_idx, 1]] = point.y;
-            data_array[[row_idx, 2]] = point.z;
-        }
-
-        // Step 3: Perform PCA using petal-decomposition (keeps all 3 components)
-        let mut pca = PcaBuilder::new(3).build();
-        if let Err(e) = pca.fit(&data_array.view()) {
-            log_warn!(LOGGER_NAME, "PCA fit failed: {}", e);
-            return None;
-        }
-
-        // Step 4: Get singular values and components
-        let singular_values = pca.singular_values();
-        let explained_variance = pca.explained_variance_ratio();
-
-        log_debug!(
-            LOGGER_NAME,
-            "PCA singular values: [{:.6}, {:.6}, {:.6}]",
-            singular_values[0],
-            singular_values[1],
-            singular_values[2]
-        );
-        log_debug!(
-            LOGGER_NAME,
-            "Explained variance ratio: [{:.6}, {:.6}, {:.6}]",
-            explained_variance[0],
-            explained_variance[1],
-            explained_variance[2]
-        );
-
-        // Step 5: Extract principal components (eigenvectors)
-        // petal-decomposition returns components as (n_components, n_features) = (3, 3)
-        // Each row is a principal component
-        let components = pca.components();
-
-        // Extract the three principal components
-        // PC0 has largest variance (lies in plane), PC2 has smallest variance (normal to plane)
-        let mut v1 = na::Vector3::new(components[[0, 0]], components[[0, 1]], components[[0, 2]]); // 1st PC - largest variance (in plane)
-        let mut v2 = na::Vector3::new(components[[1, 0]], components[[1, 1]], components[[1, 2]]); // 2nd PC - middle variance (in plane)
-        let mut v3 = na::Vector3::new(components[[2, 0]], components[[2, 1]], components[[2, 2]]); // 3rd PC - smallest variance (normal to plane)
-
-        log_debug!(
-            LOGGER_NAME,
-            "PCA component assignment: v1=PC0({:.6}), v2=PC1({:.6}), v3=PC2({:.6})",
-            singular_values[0],
-            singular_values[1],
-            singular_values[2]
-        );
-
-        log_debug!(
-            LOGGER_NAME,
-            "Initial eigenvectors: v1=({:.3}, {:.3}, {:.3}), v2=({:.3}, {:.3}, {:.3}), v3=({:.3}, {:.3}, {:.3})",
-            v1.x, v1.y, v1.z,
-            v2.x, v2.y, v2.z,
-            v3.x, v3.y, v3.z
-        );
-
-        // Publish raw eigenvectors for debugging (before any orientation constraints)
-        if let Some(debug_pubs) = debug_publishers {
-            if let Ok(eigenvector_markers) =
-                Self::create_pca_eigenvector_markers(&centroid, &v1, &v2, &v3, header)
-            {
-                let _ = debug_pubs.pca_eigenvectors.publish(eigenvector_markers);
-                log_debug!(LOGGER_NAME, "Published raw PCA eigenvectors");
+        // Step 2: Obtain the plane normal vector that points towards the origin
+        let plane_normal = {
+            let normal = plane_model.normal.into_inner();
+            if (na::Point3::origin().coords - inlier_centroid).dot(&normal) < 0.0 {
+                -normal
+            } else {
+                normal
             }
-        }
-
-        // Step 6: Apply orientation constraints
-        // Ensure v3 (normal) points toward camera (positive z in camera frame)
-        // Assuming camera is above the calibration board
-        if v3.z < 0.0 {
-            v3 = -v3;
-            log_debug!(LOGGER_NAME, "Flipped v3 to point toward camera");
-        }
-
-        // Ensure v1 and v2 have positive z components (point generally upward)
-        if v1.z < 0.0 {
-            v1 = -v1;
-            log_debug!(LOGGER_NAME, "Flipped v1 for positive z component");
-        }
-        if v2.z < 0.0 {
-            v2 = -v2;
-            log_debug!(LOGGER_NAME, "Flipped v2 for positive z component");
-        }
-
-        // Ensure right-hand rule: v3 = v1 × v2
-        let cross_product = v1.cross(&v2);
-        if cross_product.dot(&v3) < 0.0 {
-            std::mem::swap(&mut v1, &mut v2); // Swap v1 and v2 to maintain right-hand rule
-            log_debug!(LOGGER_NAME, "Swapped v1 and v2 to maintain right-hand rule");
-        }
-
-        // Step 7: Create rotation from eigenvectors using UnitQuaternion
-        // v1 -> x-axis, v2 -> y-axis, v3 -> z-axis
-        let pca_rotation_matrix = na::Matrix3::from_columns(&[v1, v2, v3]);
-        let pca_rotation = UnitQuaternion::from_matrix(&pca_rotation_matrix);
+        };
 
         log_debug!(
             LOGGER_NAME,
-            "Final eigenvectors: v1=({:.3}, {:.3}, {:.3}), v2=({:.3}, {:.3}, {:.3}), v3=({:.3}, {:.3}, {:.3})",
-            v1.x, v1.y, v1.z,
-            v2.x, v2.y, v2.z,
-            v3.x, v3.y, v3.z
+            "Plane normal (toward origin): ({:.3}, {:.3}, {:.3})",
+            plane_normal.x,
+            plane_normal.y,
+            plane_normal.z
         );
 
-        // Step 7.5: Apply -45 degree rotation around plane normal to align with board borders
-        // PCA eigenvectors align with diagonal directions, but we want x/y axes aligned with board edges
-        let rotation_angle = std::f64::consts::FRAC_PI_4; // -45 degrees
-        let plane_normal_unit = na::Unit::new_normalize(v3);
-        let normal_rotation = UnitQuaternion::from_axis_angle(&plane_normal_unit, rotation_angle);
+        // Step 3: Let the xy-plane projections of board normal and plane normal overlap
+        // This decreases the chance of falling into local minimum
+        let rotation = {
+            // Create lifting rotation: -90° around Y-axis, then -45° around Z-axis
+            let lifting_rotation = na::UnitQuaternion::from_euler_angles(0.0, -FRAC_PI_2, 0.0)
+                * na::UnitQuaternion::from_euler_angles(0.0, 0.0, -std::f64::consts::FRAC_PI_4);
 
-        // Compose rotations: first PCA, then rotate around plane normal
-        let final_rotation = normal_rotation * pca_rotation;
+            let lifted_normal = lifting_rotation * na::Vector3::z_axis();
 
-        log_debug!(
-            LOGGER_NAME,
-            "Applied -45° rotation around plane normal to align with board borders"
-        );
-
-        // Add assertions to verify correctness (debug builds only)
-        #[cfg(debug_assertions)]
-        {
-            let rotation_matrix_obj = final_rotation.to_rotation_matrix();
-            let rotation_matrix = rotation_matrix_obj.matrix();
-            let det = rotation_matrix.determinant();
-            log_debug!(LOGGER_NAME, "Rotation matrix determinant: {:.6}", det);
-            assert!(
-                (det - 1.0).abs() < 1e-6,
-                "Rotation matrix determinant should be 1.0, got {}",
-                det
-            );
-
-            // Check orthogonality
-            let should_be_identity = rotation_matrix * rotation_matrix.transpose();
-            let identity = na::Matrix3::<f64>::identity();
-            let diff_norm = (&should_be_identity - &identity).norm();
             log_debug!(
                 LOGGER_NAME,
-                "Orthogonality check (should be ~0): {:.6}",
-                diff_norm
+                "Lifted normal: ({:.3}, {:.3}, {:.3})",
+                lifted_normal.x,
+                lifted_normal.y,
+                lifted_normal.z
             );
-            assert!(
-                diff_norm < 1e-6,
-                "Rotation matrix should be orthogonal, difference norm: {}",
-                diff_norm
-            );
-        }
 
-        // Check right-hand rule (debug builds only)
-        #[cfg(debug_assertions)]
-        {
-            let computed_v3 = v1.cross(&v2);
-            let v3_alignment = computed_v3.dot(&v3);
-            log_debug!(
-                LOGGER_NAME,
-                "Right-hand rule check (v1 × v2 · v3, should be ~1): {:.6}",
-                v3_alignment
-            );
-            assert!(
-                v3_alignment > 0.9,
-                "Right-hand rule violated, alignment: {}",
-                v3_alignment
-            );
-        }
+            // Create planar rotation to align lifted normal with plane normal's XY projection
+            let planar_rotation = {
+                let planar_plane_normal = na::Vector3::new(plane_normal.x, plane_normal.y, 0.0);
+                na::UnitQuaternion::rotation_between(&lifted_normal, &planar_plane_normal)
+                    .unwrap_or_else(|| {
+                        if lifted_normal.dot(&planar_plane_normal) >= 0.0 {
+                            na::UnitQuaternion::identity()
+                        } else {
+                            na::UnitQuaternion::from_euler_angles(0.0, 0.0, std::f64::consts::PI)
+                        }
+                    })
+            };
 
-        // Step 8: Use the final composed rotation
-        let rotation = final_rotation;
+            planar_rotation * lifting_rotation
+        };
 
-        // Step 9: Compute bottom corner position from centroid
-        // BoardModel::find_correspondences() uses bottom_corner() as the origin,
-        // so pose.translation MUST be at the bottom corner (0,0) in board coordinates
-        let center_to_corner_board =
-            na::Vector3::new(-board_width_meters / 2.0, -board_width_meters / 2.0, 0.0);
-        let corner_offset_world = rotation * center_to_corner_board;
-        let corner_position = na::Point3::from(centroid + corner_offset_world);
+        // Step 4: Create initial pose with board center at inlier centroid
+        // We want: board_center_world = inlier_centroid
+        // The board center in board coordinates is at (board_width/2, board_width/2, 0)
+        // board_center_world = pose.translation + rotation * board_center_board
+        // Therefore: pose.translation = inlier_centroid - rotation * board_center_board
+        let board_center_board =
+            na::Vector3::new(board_width_meters / 2.0, board_width_meters / 2.0, 0.0);
+        let board_center_offset = rotation * board_center_board;
+        let corner_position = inlier_centroid - board_center_offset;
 
-        let pose = na::Isometry3::from_parts(Translation3::from(corner_position.coords), rotation);
+        let pose = na::Isometry3::from_parts(na::Translation3::from(corner_position), rotation);
 
         log_info!(
             LOGGER_NAME,
-            "PCA initial pose (corner): centroid=({:.3}, {:.3}, {:.3}), offset=({:.3}, {:.3}, {:.3}), corner=({:.3}, {:.3}, {:.3})",
-            centroid.x,
-            centroid.y,
-            centroid.z,
-            corner_offset_world.x,
-            corner_offset_world.y,
-            corner_offset_world.z,
+            "Initial pose from plane: centroid=({:.3}, {:.3}, {:.3}), corner=({:.3}, {:.3}, {:.3}), rotation=({:.3}, {:.3}, {:.3}, {:.3})",
+            inlier_centroid.x,
+            inlier_centroid.y,
+            inlier_centroid.z,
             pose.translation.x,
             pose.translation.y,
-            pose.translation.z
+            pose.translation.z,
+            rotation.w,
+            rotation.i,
+            rotation.j,
+            rotation.k
         );
 
         Some(pose)
@@ -1898,12 +1929,11 @@ impl CalibrationBoardLocatorNode {
 
         // Publish iteration statistics
         let stats_text = format!(
-            "Iteration: {}, Loss: {:.6}, Correspondences: {}/{}, Threshold: {:.6}",
+            "Iteration: {}, Loss: {:.6}, Correspondences: {}/{}",
             state.iteration,
             state.avg_loss,
             state.good_correspondences,
-            state.total_correspondences,
-            state.adaptive_threshold
+            state.total_correspondences
         );
         let stats_msg = StringMsg { data: stats_text };
         let _ = debug_publishers.stats.publish(stats_msg);

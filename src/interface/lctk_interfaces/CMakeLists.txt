@@ -24,9 +24,15 @@ find_package(rosidl_default_generators REQUIRED)
 
 # Generate interfaces
 rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/CalibrationMetrics.msg"
   "srv/GetBBoxParams.srv"
   "srv/SetBBoxParams.srv"
   "srv/SaveBBoxParams.srv"
+  "srv/AddDetectionToBuffer.srv"
+  "srv/ClearDetectionBuffer.srv"
+  "srv/GetBufferStatus.srv"
+  "srv/ListDetectionBuffer.srv"
+  "srv/RemoveDetectionFromBuffer.srv"
   DEPENDENCIES builtin_interfaces std_msgs geometry_msgs
 )
 
