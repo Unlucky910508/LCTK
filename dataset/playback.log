@@ -1,0 +1,44 @@
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760604537.601557223] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+[INFO] [1760604537.601670810] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760604537.607226269] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760604537.607270238] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760604537.607284428] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760604537.607296343] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760604537.607307256] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760604537.607820945] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+[INFO] [1760604542.386910737] [rclcpp]: signal_handler(signum=2)
+[INFO] [1760604542.387184078] [rclcpp]: signal_handler(signum=15)
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760604596.706226462] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+[INFO] [1760604596.706309633] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760604596.711431425] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760604596.711479556] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760604596.711500482] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760604596.711517541] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760604596.711531498] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760604596.712022258] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760604623.901789852] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+[INFO] [1760604623.901900116] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760604623.907025678] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760604623.907089254] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760604623.907103830] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760604623.907116522] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760604623.907128162] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760604623.907688579] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760604651.770098107] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+[INFO] [1760604651.770188921] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760604651.775239035] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760604651.775303798] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760604651.775394876] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760604651.775415409] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760604651.775427333] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760604651.775981856] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760604678.658887224] [rosbag2_storage]: Opened database 'front_center/front_center_0.db3' for READ_ONLY.
+[INFO] [1760604678.658969525] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760604678.663319362] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760604678.663375171] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760604678.663395640] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760604678.663414115] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760604678.663431787] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760604678.663918871] [rosbag2_storage]: Opened database 'front_center/front_center_0.db3' for READ_ONLY.
+[INFO] [1760604678.903288401] [rclcpp]: signal_handler(signum=2)
+[INFO] [1760604678.903624092] [rclcpp]: signal_handler(signum=15)
