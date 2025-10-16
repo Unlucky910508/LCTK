@@ -132,17 +132,21 @@ class EducationalExtrinsicSolver(Node):
 
         # Publishers - only essential output
         self.transform_publisher = self.create_publisher(
-            TransformStamped, "extrinsic_node_transform", qos_profile
+            TransformStamped, "extrinsic_transform", qos_profile
         )
 
         # Subscribers
         self.aruco_subscription = self.create_subscription(
-            Detection2DArray, "aruco_detections", self.aruco_callback, qos_profile
+            Detection2DArray, 
+            "aruco_detections", 
+            # "/calibration/aruco_locator/aruco_detections",
+            self.aruco_callback, qos_profile
         )
 
         self.board_subscription = self.create_subscription(
             Detection3DArray,
             "calibration_board_detections",
+            # "/calibration/lidar_board_detector/calibration_board_detections",
             self.board_callback,
             qos_profile,
         )
@@ -349,7 +353,9 @@ class EducationalExtrinsicSolver(Node):
         transform_msg = self._create_transform_message_educational(
             rvec, tvec, aruco_msg.header
         )
-
+        self.get_logger().info(
+            f"transform_msg: {transform_msg}"
+            )
         try:
             self.transform_publisher.publish(transform_msg)
             self.get_logger().info(

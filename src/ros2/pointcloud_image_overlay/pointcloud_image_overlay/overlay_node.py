@@ -238,6 +238,7 @@ class EducationalOverlayNode(Node):
         self.extrinsic_subscription = self.create_subscription(
             TransformStamped,
             "/calibration/extrinsic_solver/extrinsic_transform",  # Live calibration output
+            # "/calibration/extrinsic_solver/extrinsic_node_transform",
             self.on_extrinsic_received,
             qos,
         )
