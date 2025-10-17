@@ -14,7 +14,8 @@ class InteractiveController(Node):
     def __init__(self):
         # QoS profile for reliable communication
         qos_profile = QoSProfile(
-            reliability=ReliabilityPolicy.RELIABLE,
+            # reliability=ReliabilityPolicy.RELIABLE,
+            reliability=ReliabilityPolicy.BEST_EFFORT,
             history=HistoryPolicy.KEEP_LAST,
             depth=10,
         )
@@ -119,12 +120,13 @@ class InteractiveController(Node):
         # Only cache non-empty detections
         if msg.detections:
             # with self.lock:
+            print("get ArUco detection")
             self.latest_aruco_detection = msg
 
             # # Try to process if we have both detection types
             # self._try_solve_calibration()
         else:
-            self.get_logger().debug("Ignoring empty ArUco detection")
+            print("Ignoring empty ArUco detection")
 
     def board_callback(self, msg: Detection3DArray):
         """
@@ -143,11 +145,12 @@ class InteractiveController(Node):
         if msg.detections:
             # with self.lock:
             self.latest_board_detection = msg
+            print("get board detection")
 
             # # Try to process if we have both detection types
             # self._try_solve_calibration()
         else:
-            self.get_logger().warn("Received empty board detection")
+            print("Received empty board detection")
 
 def main(args=None):
     rclpy.init(args=args)

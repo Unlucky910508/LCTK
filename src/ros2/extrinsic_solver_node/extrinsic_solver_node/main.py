@@ -287,7 +287,13 @@ class EducationalExtrinsicSolver(Node):
             )
 
             try:
-                self._solve_extrinsic_calibration(aruco_msg, board_msg)
+                if aruco_msg and board_msg:
+                    if not self._should_use_data_pair(aruco_msg, board_msg):
+                        self.get_logger().info("Skipping data pair (not suitable for calibration)")
+                        return
+                    
+                    self.get_logger().info("Start calibration")
+                    self._solve_extrinsic_calibration(aruco_msg, board_msg)
             except Exception as e:
                 self.get_logger().error(f"Calibration failed: {e}")
         else:
@@ -299,6 +305,28 @@ class EducationalExtrinsicSolver(Node):
             self.get_logger().debug(
                 f"Waiting for detections: missing {', '.join(missing)}"
             )
+    def _should_use_data_pair(self, aruco_msg, board_msg) -> bool:
+        """自動挑選條件，回傳是否使用這對資料"""
+        # # 1️⃣ 時間同步：header.stamp 相差不要太大
+        # dt = abs((aruco_msg.header.stamp.sec + aruco_msg.header.stamp.nanosec * 1e-9) -
+        #         (board_msg.header.stamp.sec + board_msg.header.stamp.nanosec * 1e-9))
+        # if dt > 0.1:  # 超過 0.1 秒就跳過
+        #     self.get_logger().info("[_should_use_data_pair] dt above 0.1")
+        #     return False
+
+        # 2️⃣ ArUco marker 數量夠多才可靠
+        if len(aruco_msg.detections) < 3:
+            self.get_logger().info("[_should_use_data_pair] point less then 30")
+            return False
+
+        # # 3️⃣ Lidar 偵測距離太遠或太近都略過（例如 0.5~3 m）
+        # board = board_msg.detections[0]
+        # z = board.results[0].pose.pose.position.z
+        # if not 0.5 < z < 3.0:
+        #     self.get_logger().info("[_should_use_data_pair] Lidar 遠或太近")
+        #     return False
+
+        return True
 
     def _solve_extrinsic_calibration(
         self, aruco_msg: Detection2DArray, board_msg: Detection3DArray

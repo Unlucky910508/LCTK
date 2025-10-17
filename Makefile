@@ -8,7 +8,8 @@ enable_overlay := true
 log_level := info
 rviz := true
 use_best_effort_qos := true
-use_advanced_solver := true
+# use_advanced_solver := true
+use_advanced_solver := false
 
 ## Topics for sample data
 # camera_topic := /sensing/camera/front_center/image_raw
@@ -201,7 +202,8 @@ tune_filter_box:
 .PHONY: interactive_solver_controller
 interactive_solver_controller:
 	@. install/setup.sh && \
-	ros2 run interactive_solver_controller interactive_solver_controller
+	python3 src/ros2/extrinsic_solver_node/interactive_controller.py
+# 	ros2 run interactive_solver_controller interactive_solver_controller
 
 .PHONY: launch_iou_overlapping
 launch_iou_overlapping:

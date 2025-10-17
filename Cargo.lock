@@ -12187,18 +12187,6 @@ name = "actionlib_msgs"
 version = "4.9.0"
 
 [[patch.unused]]
-name = "aruco_generator_node"
-version = "0.1.1"
-
-[[patch.unused]]
-name = "aruco_locator_node"
-version = "0.1.1"
-
-[[patch.unused]]
-name = "calibration_board_locator"
-version = "0.1.1"
-
-[[patch.unused]]
 name = "composition_interfaces"
 version = "1.2.2"
 
@@ -12211,24 +12199,12 @@ name = "example_interfaces"
 version = "0.9.3"
 
 [[patch.unused]]
-name = "lidar_board_detector"
-version = "0.1.1"
-
-[[patch.unused]]
 name = "lifecycle_msgs"
 version = "1.2.2"
 
 [[patch.unused]]
 name = "mrpt_msgs"
 version = "0.3.4"
-
-[[patch.unused]]
-name = "multi_wayside"
-version = "0.1.1"
-
-[[patch.unused]]
-name = "multi_wayside_node"
-version = "0.1.0"
 
 [[patch.unused]]
 name = "nav_msgs"
@@ -12241,10 +12217,6 @@ version = "1.2.2"
 [[patch.unused]]
 name = "rosgraph_msgs"
 version = "1.2.2"
-
-[[patch.unused]]
-name = "sensor_synchronizer"
-version = "0.1.0"
 
 [[patch.unused]]
 name = "shape_msgs"

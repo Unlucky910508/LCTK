@@ -248,8 +248,10 @@ class AdvancedExtrinsicSolver(Node):
         if msg.detections:
             with self.lock:
                 self.latest_board_detection = msg
+            self.get_logger().warn("[advance] get latest_board_detection data")
         else:
-            self.get_logger().warn("Received empty board detection")
+            self.get_logger().warn("[advance] Received empty board detection")
+            return
 
     def _publishing_timer_callback(self):
         """Continuously publish the last solved transform when enabled."""
@@ -361,7 +363,8 @@ class AdvancedExtrinsicSolver(Node):
         with self.lock:
             self.detection_buffer.append((aruco_msg, board_msg))
             buffer_size = len(self.detection_buffer)
-
+        
+        self.get_logger().debug(f"see buffer size: {buffer_size}")
         # Log successful addition with diversity metrics
         if buffer_size == 1:
             self.get_logger().info(
