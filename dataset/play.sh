@@ -24,7 +24,7 @@ for d in *; do
 
     # Sleep between bags
     echo "Sleep for 10 seconds..."
-    sleep 10 &
+    sleep 5 &
     sleep_pid=$!
     wait $sleep_pid || exit $?
 done
