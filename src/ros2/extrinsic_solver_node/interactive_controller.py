@@ -89,11 +89,12 @@ class InteractiveController(Node):
                 break
 
     def publish(self):
-        for aruco, board in zip (self.aruco_buffer, self.board_buffer):
-            if aruco is not None:
-                self.publisher_aruco.publish(aruco)
-            if board is not None:
-                self.publisher_board.publish(board)
+        if len(self.aruco_buffer) > 36:
+            for aruco, board in zip (self.aruco_buffer, self.board_buffer):
+                if aruco is not None:
+                    self.publisher_aruco.publish(aruco)
+                if board is not None:
+                    self.publisher_board.publish(board)
         # if self.latest_aruco_detection is not None:
         #     self.publisher_aruco.publish(self.latest_aruco_detection)
         #     # self.get_logger().info("Published latest ArUco detection")

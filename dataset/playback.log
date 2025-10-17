@@ -996,3 +996,231 @@ stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760684529.64
 [INFO] [1760684529.656247012] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
 [INFO] [1760684529.656260232] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
 [INFO] [1760684529.656954058] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760684556.779411711] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+[INFO] [1760684556.779520093] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760684556.784877304] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760684556.784953477] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760684556.784979238] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760684556.785001513] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760684556.785019583] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760684556.785551596] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760684584.462484567] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+[INFO] [1760684584.462583969] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760684584.468941617] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760684584.469025252] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760684584.469042809] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760684584.469058049] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760684584.469070336] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760684584.469611918] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760684935.503726818] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+[INFO] [1760684935.503824335] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760684935.509226090] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760684935.509309025] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760684935.509329903] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760684935.509344537] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760684935.509356652] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760684935.509893624] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760684962.737697831] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+[INFO] [1760684962.737803490] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760684962.745079105] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760684962.745195917] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760684962.745238263] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760684962.745272586] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760684962.745304365] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760684962.746046261] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760684990.528926653] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+[INFO] [1760684990.529030348] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760684990.535331929] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760684990.535408612] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760684990.535432309] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760684990.535453744] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760684990.535472867] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760684990.536025860] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685017.625726945] [rosbag2_storage]: Opened database 'front_center/front_center_0.db3' for READ_ONLY.
+[INFO] [1760685017.625832560] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685017.632437178] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685017.632523146] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685017.632541623] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685017.632576823] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685017.632588909] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685017.633213959] [rosbag2_storage]: Opened database 'front_center/front_center_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685044.995104529] [rosbag2_storage]: Opened database 'front_left/front_left_0.db3' for READ_ONLY.
+[INFO] [1760685044.995200712] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685045.000785173] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685045.000857561] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685045.000874999] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685045.000889424] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685045.000901785] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685045.001410698] [rosbag2_storage]: Opened database 'front_left/front_left_0.db3' for READ_ONLY.
+[INFO] [1760685054.831650179] [rclcpp]: signal_handler(signum=2)
+[INFO] [1760685054.831913112] [rclcpp]: signal_handler(signum=15)
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685072.396869407] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+[INFO] [1760685072.396967106] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685072.403150906] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685072.403221654] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685072.403238680] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685072.403252934] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685072.403265486] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685072.403801644] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685099.606971766] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+[INFO] [1760685099.607080579] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685099.613491111] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685099.613583932] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685099.613608412] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685099.613624332] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685099.613637518] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685099.614240215] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685127.361841891] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+[INFO] [1760685127.361964470] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685127.368266583] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685127.368344941] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685127.368361960] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685127.368375836] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685127.368388084] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685127.368943886] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+[INFO] [1760685129.867479899] [rclcpp]: signal_handler(signum=2)
+[INFO] [1760685129.867654108] [rclcpp]: signal_handler(signum=15)
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685138.040232067] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+[INFO] [1760685138.040360733] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685138.046009122] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685138.046130624] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685138.046173163] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685138.046231195] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685138.046261452] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685138.047024781] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685165.244506230] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+[INFO] [1760685165.244598025] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685165.250352404] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685165.250449561] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685165.250486965] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685165.250519724] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685165.250548676] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685165.251140711] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685193.095899761] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+[INFO] [1760685193.096018778] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685193.104654421] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685193.104836162] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685193.104994465] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685193.105019972] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685193.105036798] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685193.105934629] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685219.961805479] [rosbag2_storage]: Opened database 'front_center/front_center_0.db3' for READ_ONLY.
+[INFO] [1760685219.961957565] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685219.968711989] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685219.968799036] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685219.968819136] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685219.968835452] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685219.968849005] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685219.969427506] [rosbag2_storage]: Opened database 'front_center/front_center_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685247.332503399] [rosbag2_storage]: Opened database 'front_left/front_left_0.db3' for READ_ONLY.
+[INFO] [1760685247.332603097] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685247.338187190] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685247.338261713] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685247.338279137] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685247.338295742] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685247.338307993] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685247.338841997] [rosbag2_storage]: Opened database 'front_left/front_left_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685274.721159029] [rosbag2_storage]: Opened database 'front_right/front_right_0.db3' for READ_ONLY.
+[INFO] [1760685274.721283369] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685274.728641119] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685274.728760847] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685274.728788754] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685274.728810420] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685274.728830528] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685274.729636374] [rosbag2_storage]: Opened database 'front_right/front_right_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685381.175501114] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+[INFO] [1760685381.175611516] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685381.181083099] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685381.181214722] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685381.181238969] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685381.181254002] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685381.181266420] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685381.181790443] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685408.377851786] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+[INFO] [1760685408.377951110] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685408.383547974] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685408.383692379] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685408.383806658] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685408.383833142] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685408.383846182] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685408.384375892] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685436.280127932] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+[INFO] [1760685436.280254695] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685436.287192886] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685436.287293139] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685436.287319477] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685436.287342236] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685436.287358490] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685436.288048146] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685463.113318186] [rosbag2_storage]: Opened database 'front_center/front_center_0.db3' for READ_ONLY.
+[INFO] [1760685463.113419913] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685463.119422087] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685463.119522163] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685463.119542168] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685463.119558144] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685463.119571210] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685463.120174833] [rosbag2_storage]: Opened database 'front_center/front_center_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685490.418979042] [rosbag2_storage]: Opened database 'front_left/front_left_0.db3' for READ_ONLY.
+[INFO] [1760685490.419076354] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685490.425620457] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685490.425732954] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685490.425771748] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685490.425803664] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685490.425832380] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685490.426511824] [rosbag2_storage]: Opened database 'front_left/front_left_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685517.729706223] [rosbag2_storage]: Opened database 'front_right/front_right_0.db3' for READ_ONLY.
+[INFO] [1760685517.729804350] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685517.734947285] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685517.735034941] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685517.735051391] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685517.735065025] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685517.735076441] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685517.735594180] [rosbag2_storage]: Opened database 'front_right/front_right_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685848.773530224] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+[INFO] [1760685848.773635724] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685848.780227833] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685848.780312051] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685848.780338280] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685848.780470569] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685848.780509619] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685848.781047760] [rosbag2_storage]: Opened database 'back_center/back_center_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685875.918485536] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+[INFO] [1760685875.918580811] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685875.924368045] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685875.924453895] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685875.924473347] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685875.924604411] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685875.924675457] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685875.925622015] [rosbag2_storage]: Opened database 'back_left/back_left_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685903.699993351] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+[INFO] [1760685903.700086387] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685903.707897714] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685903.708024251] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685903.708044759] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685903.708061861] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685903.708075135] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685903.708703394] [rosbag2_storage]: Opened database 'back_right/back_right_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685930.529903810] [rosbag2_storage]: Opened database 'front_center/front_center_0.db3' for READ_ONLY.
+[INFO] [1760685930.530006950] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685930.535928680] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685930.535998168] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685930.536015833] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685930.536031802] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685930.536044450] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685930.536559099] [rosbag2_storage]: Opened database 'front_center/front_center_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685957.881956861] [rosbag2_storage]: Opened database 'front_left/front_left_0.db3' for READ_ONLY.
+[INFO] [1760685957.882077237] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685957.889321317] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685957.889395850] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685957.889411921] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685957.889426187] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685957.889438359] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685957.889979402] [rosbag2_storage]: Opened database 'front_left/front_left_0.db3' for READ_ONLY.
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1760685985.241713789] [rosbag2_storage]: Opened database 'front_right/front_right_0.db3' for READ_ONLY.
+[INFO] [1760685985.241831138] [rosbag2_player]: Set rate to 0.5
+[INFO] [1760685985.247971738] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1760685985.248051758] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1760685985.248071308] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1760685985.248087494] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1760685985.248100740] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1760685985.248685653] [rosbag2_storage]: Opened database 'front_right/front_right_0.db3' for READ_ONLY.

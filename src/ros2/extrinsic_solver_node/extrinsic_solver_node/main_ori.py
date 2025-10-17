@@ -137,32 +137,32 @@ class EducationalExtrinsicSolver(Node):
             TransformStamped, "extrinsic_transform", qos_profile
         )
 
-        # # Subscribers
-        # self.aruco_subscription = self.create_subscription(
-        #     Detection2DArray, 
-        #     "aruco_detections", 
-        #     # "/calibration/aruco_locator/aruco_detections",
-        #     self.aruco_callback, qos_profile
-        # )
-
-        # self.board_subscription = self.create_subscription(
-        #     Detection3DArray,
-        #     "calibration_board_detections",
-        #     # "/calibration/lidar_board_detector/calibration_board_detections",
-        #     self.board_callback,
-        #     qos_profile,
-        # )
-
+        # Subscribers
         self.aruco_subscription = self.create_subscription(
-            Detection2DArray, "/calibration/collect_trigger/aruco_detections", self.aruco_callback, qos_profile
+            Detection2DArray, 
+            "aruco_detections", 
+            # "/calibration/aruco_locator/aruco_detections",
+            self.aruco_callback, qos_profile
         )
 
         self.board_subscription = self.create_subscription(
             Detection3DArray,
-            "/calibration/collect_trigger/calibration_board_detections",
+            "calibration_board_detections",
+            # "/calibration/lidar_board_detector/calibration_board_detections",
             self.board_callback,
             qos_profile,
         )
+
+        # self.aruco_subscription = self.create_subscription(
+        #     Detection2DArray, "/calibration/collect_trigger/aruco_detections", self.aruco_callback, qos_profile
+        # )
+
+        # self.board_subscription = self.create_subscription(
+        #     Detection3DArray,
+        #     "/calibration/collect_trigger/calibration_board_detections",
+        #     self.board_callback,
+        #     qos_profile,
+        # )
 
         # self.create_subscription(Detection2DArray, '/calibration/collect_trigger/aruco_detections', self.on_trigger, qos_profile)
         # self.create_subscription(Detection3DArray, '/calibration/collect_trigger/calibration_board_detections', self.on_trigger, qos_profile)
